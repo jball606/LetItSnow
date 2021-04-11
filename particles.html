@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{ margin:10px; background:#CCC; }
+#my_canvas{ background: #036; border:#000 1px solid; }
+</style>
+<script>
+var bg = new Image();
+bg.src = "black_q_eng.jpg";
+var stop = false;
+
+
+function toggleStop() {
+	if(stop == false) {
+		stop = true;
+	} else {
+		stop = false;
+	}
+}
+
+function setElements(type) {
+	setSpeed(type)
+	setColor(type)
+
+}
+
+function setSpeed(type) {
+	switch (type) {
+		case "snow": 
+			speed = 10;
+			break;
+		case "rain":
+			initCanvas(-100)
+			break;
+	}
+}
+
+function setColor(type) {
+	switch (type) {
+		case "snow": 
+			color = "rgba(255,255,255,.75)";
+			break;
+		case "rain":
+			color = "rgba(100,255,255,.75)";
+			break;
+	}
+	
+}
+setColor("snow");
+
+
+
+function initCanvas(speed){
+	
+	var animateInterval = null;
+
+	
+	var ctx = document.getElementById('my_canvas').getContext('2d');
+	var cW = ctx.canvas.width+50, cH = ctx.canvas.height;
+	ctx.clearRect(0,0,cW,cH);
+	clearInterval(animateInterval);
+	
+	var flakes = [];
+	function addFlake(){
+		var x = Math.floor(Math.random() * cW) + 1;
+		var y = -100;
+		var s = Math.floor(Math.random() * 3) + 1;
+		flakes.push({"x":x,"y":y,"s":s});
+	}
+	function snow(){
+		addFlake();
+		addFlake();
+		
+		for(var i = 0; i < flakes.length; i++){
+		
+			ctx.fillStyle =  color;//Color
+			ctx.beginPath();
+			ctx.arc(flakes[i].x, flakes[i].y+=flakes[i].s*.5, flakes[i].s*.5, 0, Math.PI*2, false);
+			ctx.fill();
+			
+			if(flakes[i].y > cH){
+				flakes.splice(i,1);
+			}
+		}
+		
+    }
+
+	function animate(){
+		if(stop == false) {
+			ctx.save();
+			ctx.clearRect(0, 0, cW, cH);
+			ctx.drawImage(bg,0,0);
+			ctx.rotate(0);
+			snow();
+			ctx.restore();
+		}
+	}
+	
+		animateInterval = setInterval(animate, speed); //Fall speed
+	
+}
+window.addEventListener('load', function(event) {
+	initCanvas(10)
+});
+</script>
+</head>
+<body>
+<canvas id="my_canvas" width="400" height="400"></canvas>
+<button id="stop" onclick="toggleStop();" value="stop">Stop</button>
+
+<button id="stop" onclick="setElements('rain');" value="rain">Rain</button>
+<button id="stop" onclick="setElements('snow');" value="snow">Snow</button>
+</body>
+</html>
